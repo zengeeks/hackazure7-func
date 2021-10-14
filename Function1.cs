@@ -30,8 +30,14 @@ namespace ToDo
             dynamic data = JsonConvert.DeserializeObject(requestBody);
             name = name ?? data?.name;
 
+            var response = JsonConvert.SerializeObject(new TodoItem
+            {
+                Id = "00000",
+                Title = $"Hello, {name}"
+            });
+
             return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
+                ? (ActionResult)new OkObjectResult(response)
                 : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
         }
 
