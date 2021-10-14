@@ -37,7 +37,7 @@ namespace ToDo
 
         [FunctionName("add-item")]
         public async Task<IActionResult> AddTodo(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             [CosmosDB(Connection = "CosmosConnection")] CosmosClient cosmosClient, ILogger log)
         {
             var container = cosmosClient.GetContainer("ToDoList", "Items");
@@ -56,7 +56,7 @@ namespace ToDo
 
         [FunctionName("get-item")]
         public async Task<IActionResult> GetTodo(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "item/{id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "item/{id}")] HttpRequest req,
             string id,
             [CosmosDB(Connection = "CosmosConnection")] CosmosClient cosmosClient, ILogger log)
         {
