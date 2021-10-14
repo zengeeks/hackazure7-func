@@ -13,6 +13,28 @@ namespace ToDo
 {
     public class Function1
     {
+        [FunctionName("probe")]
+        public static async Task<IActionResult> Run(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)]
+            HttpRequest req, ILogger log)
+        {
+            log.LogInformation("C# HTTP trigger function processed a request.");
+
+            string name = req.Query["name"];
+
+            var requestBody = String.Empty;
+            using (StreamReader streamReader = new StreamReader(req.Body))
+            {
+                requestBody = await streamReader.ReadToEndAsync();
+            }
+            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            name = name ?? data?.name;
+
+            return name != null
+                ? (ActionResult)new OkObjectResult($"Hello, {name}")
+                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+        }
+
         [FunctionName("add-item")]
         public async Task<IActionResult> AddTodo(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
