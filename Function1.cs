@@ -13,8 +13,8 @@ namespace ToDo
 {
     public class Function1
     {
-        [FunctionName("add-todo")]
-        public async Task<IActionResult> Run(
+        [FunctionName("add-item")]
+        public async Task<IActionResult> AddTodo(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             [CosmosDB(Connection = "CosmosConnection")] CosmosClient cosmosClient, ILogger log)
         {
@@ -30,6 +30,19 @@ namespace ToDo
 
             await container.CreateItemAsync(todoItem, new PartitionKey(todoItem.Id));
             return new OkResult();
+        }
+
+        [FunctionName("get-item")]
+        public async Task<IActionResult> GetTodo(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "item/{id}")] HttpRequest req,
+            string id,
+            [CosmosDB(Connection = "CosmosConnection")] CosmosClient cosmosClient, ILogger log)
+        {
+            var container = cosmosClient.GetContainer("ToDoList", "Items");
+
+            var todoItem = await container.ReadItemAsync<TodoItem>(id, new PartitionKey(id));
+
+            return new OkObjectResult(todoItem.Resource);
         }
     }
 
